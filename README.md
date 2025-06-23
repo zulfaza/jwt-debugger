@@ -1,54 +1,73 @@
-# React + TypeScript + Vite
+# JWT Debugger
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web app for decoding, editing, and verifying JSON Web Tokens (JWT) using React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Decode JWTs**: Instantly decode and view JWT header and payload.
+- **Edit Payload**: Modify the payload and generate a new JWT.
+- **Signature Verification**: Verify JWT signatures using HS256 and a custom secret.
+- **Live Feedback**: See validation results and errors in real time.
+- **Copy to Clipboard**: Easily copy JWTs and payloads.
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- [pnpm](https://pnpm.io/) or [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+
+### Installation
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/your-username/jwt-debugger.git
+cd jwt-debugger
+pnpm install
+# or
+npm install
+# or
+yarn install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Running the App
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Start the development server:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+pnpm dev
+# or
+npm run dev
+# or
+yarn dev
 ```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser to use the app.
+
+### Building for Production
+
+```bash
+pnpm build
+# or
+npm run build
+# or
+yarn build
+```
+
+## Project Structure
+
+- `src/` — Main source code
+  - `App.tsx` — Main application component
+  - `components/` — UI components
+  - `lib/jwt/hs256/` — JWT HS256 generation and verification logic
+- `public/` — Static assets
+
+## Development
+
+- Built with [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), and [Vite](https://vitejs.dev/)
+- ESLint and Prettier for code quality and formatting
+
+## License
+
+MIT
