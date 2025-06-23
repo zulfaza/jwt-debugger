@@ -133,7 +133,15 @@ function App() {
     const target = event.target;
     const value = target.value;
     setSecret(value);
+    setError(null);
     try {
+      if (!value) {
+        setError({
+          title: 'Invalid Secret',
+          message: 'Please enter a valid secret',
+        });
+        return;
+      }
       const payload = JSON.parse(editablePayload);
       const encodedSignature = await generateJwtHS256(payload, value);
       setEncodedJWT(encodedSignature);
