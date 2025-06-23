@@ -1,13 +1,13 @@
-import './App.css';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Copy, CheckCircle, XCircle } from 'lucide-react';
+import { Copy, CheckCircle, XCircle, AlertCircleIcon } from 'lucide-react';
 import { verifyJwtHS256 } from './lib/jwt/hs256/verify';
 import { generateJwtHS256 } from './lib/jwt/hs256/generate';
+import { Alert, AlertDescription, AlertTitle } from './components/ui/alert';
 // Base64 URL decode function
 function base64UrlDecode(str: string): string {
   try {
@@ -34,6 +34,11 @@ function App() {
   const [editablePayload, setEditablePayload] = useState(
     '{\n  "sub": "1234567890",\n  "name": "John Doe",\n  "iat": 1516239022\n}'
   );
+  const [error, setError] = useState<null | {
+    title: string;
+    message: string;
+  }>(null);
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
   };
@@ -42,6 +47,10 @@ function App() {
     try {
       const parts = token.split('.');
       if (parts.length !== 3) {
+        setError({
+          title: 'Invalid JWT',
+          message: 'The JWT is not valid format',
+        });
         setIsValidJwt(false);
         setIsSignatureValid(false);
         return;
@@ -53,6 +62,10 @@ function App() {
       const payloadJson = base64UrlDecode(payloadB64);
 
       if (!headerJson || !payloadJson) {
+        setError({
+          title: 'Invalid JWT',
+          message: 'The JWT is not valid, failed to parse header or payload.',
+        });
         setIsValidJwt(false);
         setIsSignatureValid(false);
         return;
@@ -82,6 +95,7 @@ function App() {
   const handleEncodedJWTChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
+    setError(null);
     const target = event.target;
     const value = target.value;
     setEncodedJWT(value);
@@ -94,7 +108,7 @@ function App() {
     const target = event.target;
     const value = target.value;
     setEditablePayload(value);
-
+    setError(null);
     try {
       const payloadJson = JSON.parse(value);
       const encodedPayload = await generateJwtHS256(payloadJson, secret);
@@ -103,6 +117,13 @@ function App() {
       setIsValidJwt(true);
     } catch (error) {
       console.log(error);
+      setError({
+        title: 'Invalid Payload',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Unknown error, Please check your payload and try again.',
+      });
     }
   };
 
@@ -200,6 +221,18 @@ function App() {
                   : 'Signature Not Verified'}
               </Badge>
             </div>
+
+            {error && (
+              <div className='mb-10'>
+                <Alert variant='destructive'>
+                  <AlertCircleIcon />
+                  <AlertTitle>{error.title}</AlertTitle>
+                  <AlertDescription>
+                    <p>{error.message}</p>
+                  </AlertDescription>
+                </Alert>
+              </div>
+            )}
           </div>
 
           {/* Right Column - Editable JWT Components */}
