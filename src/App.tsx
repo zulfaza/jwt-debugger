@@ -2,12 +2,11 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Copy, CheckCircle, XCircle, AlertCircleIcon } from 'lucide-react';
+import { Copy, AlertCircleIcon } from 'lucide-react';
 import { verifyJwtHS256 } from './lib/jwt/hs256/verify';
 import { generateJwtHS256 } from './lib/jwt/hs256/generate';
-import { Alert, AlertDescription, AlertTitle } from './components/ui/alert';
+import Github from './components/icons/github';
+
 // Base64 URL decode function
 function base64UrlDecode(str: string): string {
   try {
@@ -27,6 +26,8 @@ function App() {
   const [secret, setSecret] = useState('your-256-bit-secret');
   const [isValidJwt, setIsValidJwt] = useState(true);
   const [isSignatureValid, setIsSignatureValid] = useState(true);
+  const [copiedJWT, setCopiedJWT] = useState(false);
+  const [copiedPayload, setCopiedPayload] = useState(false);
   const [editableHeader, setEditableHeader] = useState({
     alg: 'HS256',
     typ: 'JWT',
@@ -39,8 +40,15 @@ function App() {
     message: string;
   }>(null);
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, type: 'jwt' | 'payload') => {
     navigator.clipboard.writeText(text);
+    if (type === 'jwt') {
+      setCopiedJWT(true);
+      setTimeout(() => setCopiedJWT(false), 1000);
+    } else {
+      setCopiedPayload(true);
+      setTimeout(() => setCopiedPayload(false), 1000);
+    }
   };
 
   const decodeJWT = async (token: string, secretKey: string) => {
@@ -153,178 +161,178 @@ function App() {
   };
 
   return (
-    <div className='min-h-screen bg-background'>
-      {/* Header */}
-      <header className='border-b bg-white'>
-        <div className='container mx-auto px-4 py-4'>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <div className='w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center'>
-                <span className='text-white font-bold text-sm'>JWT</span>
-              </div>
-              <span className='font-semibold text-lg'>JWT</span>
-              <span className='text-muted-foreground'>Debugger</span>
-            </div>
+    <div className='min-h-screen flex flex-col bg-[#1e1e2e] text-[#cdd6f4] p-4 font-mono'>
+      <header className='border-b border-[#313244] mb-6'>
+        <div className='container mx-auto px-4 py-2'>
+          <div className='flex items-center gap-2'>
+            <span className='text-[#89b4fa]'>▲</span>
+            <span className='font-bold text-[#89b4fa]'>JWT-DEBUGGER</span>
+            <span className='text-[#6c7086]'>v1.0.0</span>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className='container mx-auto px-4 py-8'>
-        <div className='text-center mb-8'>
-          <h1 className='text-3xl font-bold mb-4'>
-            JSON Web Token (JWT) Debugger
-          </h1>
-        </div>
-
+      <div className='container mx-auto px-4 flex-1'>
         <div className='grid lg:grid-cols-2 gap-8'>
           {/* Left Column - Encoded JWT */}
           <div className='space-y-4'>
-            <div className='flex items-center justify-between'>
-              <h2 className='text-xl font-semibold'>ENCODED VALUE</h2>
-              <div className='flex gap-2'>
-                <Button
-                  onClick={() => copyToClipboard(encodedJWT)}
-                  variant='ghost'
-                  size='sm'
-                >
-                  <Copy className='h-4 w-4' />
-                  COPY
-                </Button>
-              </div>
+            <div className='flex items-center gap-2 mb-2'>
+              <span className='text-[#89b4fa]'>~</span>
+              <span className='text-[#cdd6f4]'>ENCODED_JWT</span>
+              <Button
+                onClick={() => copyToClipboard(encodedJWT, 'jwt')}
+                variant='ghost'
+                size='sm'
+                className={`transition-colors duration-200 ${
+                  copiedJWT
+                    ? 'text-[#a6e3a1] hover:text-[#a6e3a1] hover:bg-[#a6e3a1]/20'
+                    : 'text-[#cdd6f4] hover:text-[#89b4fa] hover:bg-[#313244]'
+                }`}
+              >
+                <Copy className='h-4 w-4 mr-1' />
+                {copiedJWT ? 'copied!' : 'copy'}
+              </Button>
             </div>
 
             <div className='relative'>
               <Textarea
                 value={encodedJWT}
                 onChange={handleEncodedJWTChange}
-                placeholder='JSON WEB TOKEN (JWT)'
-                className='min-h-[200px] font-mono text-sm'
+                placeholder='Enter your JWT here...'
+                className='min-h-[120px] bg-[#181825] border-[#313244] text-[#cdd6f4] placeholder-[#6c7086] focus:border-[#89b4fa] focus:ring-0 focus:ring-offset-0'
               />
             </div>
 
-            <div className='flex gap-2'>
-              <Badge
-                variant={isValidJwt ? 'default' : 'destructive'}
-                className='bg-green-100 text-green-800'
-              >
+            <div className='flex gap-4 text-sm mt-4'>
+              <div className='flex items-center gap-2'>
+                <span className='text-[#89b4fa]'>⚡</span>
+                <span className='text-[#6c7086]'>STATUS:</span>
                 {isValidJwt ? (
-                  <>
-                    <CheckCircle className='h-3 w-3 mr-1' />
-                    Valid JWT
-                  </>
+                  <span className='text-[#a6e3a1]'>VALID_JWT</span>
                 ) : (
-                  <>
-                    <XCircle className='h-3 w-3 mr-1' />
-                    Invalid JWT
-                  </>
+                  <span className='text-[#f38ba8]'>INVALID_JWT</span>
                 )}
-              </Badge>
-              <Badge
-                variant={isSignatureValid ? 'default' : 'secondary'}
-                className='bg-blue-100 text-blue-800'
-              >
-                {isSignatureValid
-                  ? 'Signature Verified'
-                  : 'Signature Not Verified'}
-              </Badge>
+              </div>
+              <div className='flex items-center gap-2'>
+                <span className='text-[#89b4fa]'>⚡</span>
+                <span className='text-[#6c7086]'>SIGNATURE:</span>
+                {isSignatureValid ? (
+                  <span className='text-[#a6e3a1]'>VERIFIED</span>
+                ) : (
+                  <span className='text-[#f38ba8]'>UNVERIFIED</span>
+                )}
+              </div>
             </div>
 
             {error && (
-              <div className='mb-10'>
-                <Alert variant='destructive'>
-                  <AlertCircleIcon />
-                  <AlertTitle>{error.title}</AlertTitle>
-                  <AlertDescription>
-                    <p>{error.message}</p>
-                  </AlertDescription>
-                </Alert>
+              <div className='mt-4 border border-[#f38ba8]/30 bg-[#f38ba8]/5 p-4 rounded'>
+                <div className='flex items-center gap-2 text-[#f38ba8]'>
+                  <AlertCircleIcon className='h-4 w-4' />
+                  <span className='font-bold'>{error.title}</span>
+                </div>
+                <p className='mt-2 text-[#f38ba8]/80'>{error.message}</p>
               </div>
             )}
           </div>
 
           {/* Right Column - Editable JWT Components */}
-          <div className='space-y-6'>
+          <div className='space-y-8'>
             {/* Header */}
-            <Card className='gap-2'>
-              <CardHeader className=''>
-                <div className='flex items-center justify-between'>
-                  <CardTitle className='text-sm font-medium'>HEADER</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
+            <div className='space-y-2'>
+              <div className='flex items-center gap-2'>
+                <span className='text-[#89b4fa]'>~</span>
+                <span className='text-[#bac2de]'>header.json</span>
+                <span className='text-[#6c7086] text-sm'>[readonly]</span>
+              </div>
+              <div className='border border-[#313244] bg-[#181825] rounded-lg p-4'>
                 <Textarea
                   value={JSON.stringify(editableHeader, null, 2)}
-                  className='min-h-[100px] font-mono text-sm bg-red-50'
-                  placeholder='Enter JWT header JSON'
+                  className='min-h-[100px] bg-transparent border-0 text-[#cdd6f4] focus:ring-0 resize-none'
+                  placeholder='JWT header data'
                   disabled
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Payload */}
-            <Card className='gap-2'>
-              <CardHeader className=''>
-                <div className='flex items-center justify-between'>
-                  <CardTitle className='text-sm font-medium'>PAYLOAD</CardTitle>
-                  <div className='flex gap-2'>
-                    <Button
-                      onClick={() => copyToClipboard(editablePayload)}
-                      variant='ghost'
-                      size='sm'
-                    >
-                      <Copy className='h-4 w-4' />
-                      COPY
-                    </Button>
-                  </div>
+            <div className='space-y-2'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-2'>
+                  <span className='text-[#cba6f7]'>{'>'}</span>
+                  <span>payload.json</span>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <Textarea
-                  value={editablePayload}
-                  onChange={handlePayloadChange}
-                  className='min-h-[150px] font-mono text-sm bg-purple-50'
-                  placeholder='Enter JWT payload JSON'
-                />
-              </CardContent>
-            </Card>
+                <Button
+                  onClick={() => copyToClipboard(editablePayload, 'payload')}
+                  variant='ghost'
+                  size='sm'
+                  className={`transition-colors duration-200 ${
+                    copiedPayload
+                      ? 'text-[#a6e3a1] hover:text-[#a6e3a1] hover:bg-[#a6e3a1]/20'
+                      : 'text-[#cdd6f4] hover:text-[#89b4fa] hover:bg-[#313244]'
+                  }`}
+                >
+                  <Copy className='h-4 w-4 mr-1' />
+                  {copiedPayload ? 'copied!' : 'copy'}
+                </Button>
+              </div>
+              <Textarea
+                value={editablePayload}
+                onChange={handlePayloadChange}
+                className='min-h-[120px] bg-[#181825] border-[#313244] text-[#cdd6f4] placeholder-[#6c7086] focus:border-[#89b4fa] focus:ring-0 focus:ring-offset-0'
+                placeholder='Enter JWT payload data'
+              />
+            </div>
 
             {/* Signature Verification */}
-            <Card className='gap-2'>
-              <CardHeader className=''>
-                <CardTitle className='text-sm text-left font-medium'>
-                  VERIFY SIGNATURE
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className='space-y-3'>
-                  <div className='relative'>
-                    <Input
-                      value={secret}
-                      onChange={handleSignatureChange}
-                      placeholder='your-256-bit-secret'
-                      className='font-mono'
-                      disabled={
-                        !editableHeader ||
-                        editableHeader.alg.toUpperCase() !== 'HS256'
-                      } // right now we just support HS256
-                    />
+            <div className='space-y-2'>
+              <div className='flex items-center gap-2'>
+                <span className='text-[#89b4fa]'>~</span>
+                <span className='text-[#bac2de]'>verify_signature</span>
+                <span className='text-[#89b4fa]'>--alg</span>
+                <span className='text-[#a6e3a1]'>HS256</span>
+              </div>
+              <div className='border border-[#313244] bg-[#181825] rounded-lg p-4 space-y-4'>
+                <Input
+                  value={secret}
+                  onChange={handleSignatureChange}
+                  placeholder='Enter your secret key...'
+                  className='bg-transparent border-[#313244] text-[#cdd6f4] focus:border-[#89b4fa] focus:ring-0'
+                  disabled={
+                    !editableHeader ||
+                    editableHeader.alg.toUpperCase() !== 'HS256'
+                  }
+                />
+                {secret && (
+                  <div className='flex items-center gap-2'>
+                    <span className='text-[#89b4fa]'>⚡</span>
+                    <span className='text-[#6c7086]'>SIGNATURE:</span>
+                    {isSignatureValid ? (
+                      <span className='text-[#a6e3a1]'>VERIFIED ✓</span>
+                    ) : (
+                      <span className='text-[#f38ba8]'>INVALID ✗</span>
+                    )}
                   </div>
-                  {secret && (
-                    <div className='bg-green-50 p-3 rounded border'>
-                      <p className='text-sm text-green-800 font-mono'>
-                        {isSignatureValid
-                          ? 'Valid secret'
-                          : 'Invalid secret or signature'}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      {/* Footer */}
+      <footer className='border-t border-[#313244] pt-6 text-center text-xs text-[#6c7086]'>
+        <span className='flex items-center justify-center gap-2'>
+          &copy; {new Date().getFullYear()} Zulfaza.
+          <a
+            href='https://github.com/zulfaza/jwt-debugger'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='flex items-center gap-1 text-[#89b4fa] hover:underline'
+          >
+            <Github className='w-4 h-4 text-[#89b4fa]' />
+          </a>
+        </span>
+      </footer>
     </div>
   );
 }
