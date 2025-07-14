@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -20,9 +20,48 @@ function base64UrlDecode(str: string): string {
 }
 
 function App() {
-  const [encodedJWT, setEncodedJWT] = useState(
-    `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
+  const [encodedJWT, setEncodedJWT] = useState<string>(
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
   );
+  // Dark mode state
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    try {
+      const stored = window.localStorage.getItem('jwt-debugger-dark-mode');
+      if (stored !== null) return stored === 'true';
+      return (
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+      );
+    } catch {
+      return false;
+    }
+  });
+
+  // Effect to update localStorage and class
+  useEffect(() => {
+    window.localStorage.setItem(
+      'jwt-debugger-dark-mode',
+      isDarkMode.toString()
+    );
+  }, [isDarkMode]);
+
+  // Listen for system changes
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => {
+      // Only update if user hasn't set a preference
+      if (window.localStorage.getItem('jwt-debugger-dark-mode') === null) {
+        setIsDarkMode(e.matches);
+      }
+    };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  // Toggle function
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => !prev);
+  };
   const [secret, setSecret] = useState('your-256-bit-secret');
   const [isValidJwt, setIsValidJwt] = useState(true);
   const [isSignatureValid, setIsSignatureValid] = useState(true);
@@ -161,14 +200,34 @@ function App() {
   };
 
   return (
-    <div className='min-h-screen flex flex-col bg-[#1e1e2e] text-[#cdd6f4] p-4 font-mono'>
-      <header className='border-b border-[#313244] mb-6'>
-        <div className='container mx-auto px-4 py-2'>
+    <div
+      className={`min-h-screen flex flex-col bg-background text-foreground p-4 font-mono${
+        isDarkMode ? ' dark' : ''
+      }`}
+    >
+      <header className='border-b border-border mb-6'>
+        <div className='container mx-auto px-4 py-2 flex items-center justify-between'>
           <div className='flex items-center gap-2'>
-            <span className='text-[#89b4fa]'>▲</span>
-            <span className='font-bold text-[#89b4fa]'>JWT-DEBUGGER</span>
-            <span className='text-[#6c7086]'>v1.0.0</span>
+            <span className='text-primary'>▲</span>
+            <span className='font-bold text-primary'>JWT-DEBUGGER</span>
+            <span className='text-muted-foreground'>v1.0.0</span>
           </div>
+          <Button
+            onClick={toggleDarkMode}
+            variant='ghost'
+            size='sm'
+            className='ml-4 flex items-center gap-1'
+            aria-label='Toggle dark mode'
+          >
+            {isDarkMode ? (
+              <span className='text-yellow-400'>🌙</span>
+            ) : (
+              <span className='text-blue-500'>☀️</span>
+            )}
+            <span className='text-muted-foreground text-xs'>
+              {isDarkMode ? 'Dark' : 'Light'}
+            </span>
+          </Button>
         </div>
       </header>
 
@@ -178,16 +237,16 @@ function App() {
           {/* Left Column - Encoded JWT */}
           <div className='space-y-4'>
             <div className='flex items-center gap-2 mb-2'>
-              <span className='text-[#89b4fa]'>~</span>
-              <span className='text-[#cdd6f4]'>ENCODED_JWT</span>
+              <span className='text-primary'>~</span>
+              <span className='text-foreground'>ENCODED_JWT</span>
               <Button
                 onClick={() => copyToClipboard(encodedJWT, 'jwt')}
                 variant='ghost'
                 size='sm'
                 className={`transition-colors duration-200 ${
                   copiedJWT
-                    ? 'text-[#a6e3a1] hover:text-[#a6e3a1] hover:bg-[#a6e3a1]/20'
-                    : 'text-[#cdd6f4] hover:text-[#89b4fa] hover:bg-[#313244]'
+                    ? 'text-green-500 hover:text-green-500 hover:bg-green-500/20'
+                    : 'text-foreground hover:text-primary hover:bg-border'
                 }`}
               >
                 <Copy className='h-4 w-4 mr-1' />
@@ -200,38 +259,38 @@ function App() {
                 value={encodedJWT}
                 onChange={handleEncodedJWTChange}
                 placeholder='Enter your JWT here...'
-                className='min-h-[120px] bg-[#181825] border-[#313244] text-[#cdd6f4] placeholder-[#6c7086] focus:border-[#89b4fa] focus:ring-0 focus:ring-offset-0'
+                className='min-h-[120px] bg-card border-border text-foreground placeholder-muted-foreground focus:border-primary focus:ring-0 focus:ring-offset-0'
               />
             </div>
 
             <div className='flex gap-4 text-sm mt-4'>
               <div className='flex items-center gap-2'>
-                <span className='text-[#89b4fa]'>⚡</span>
-                <span className='text-[#6c7086]'>STATUS:</span>
+                <span className='text-primary'>⚡</span>
+                <span className='text-muted-foreground'>STATUS:</span>
                 {isValidJwt ? (
-                  <span className='text-[#a6e3a1]'>VALID_JWT</span>
+                  <span className='text-green-500'>VALID_JWT</span>
                 ) : (
-                  <span className='text-[#f38ba8]'>INVALID_JWT</span>
+                  <span className='text-red-400'>INVALID_JWT</span>
                 )}
               </div>
               <div className='flex items-center gap-2'>
-                <span className='text-[#89b4fa]'>⚡</span>
-                <span className='text-[#6c7086]'>SIGNATURE:</span>
+                <span className='text-primary'>⚡</span>
+                <span className='text-muted-foreground'>SIGNATURE:</span>
                 {isSignatureValid ? (
-                  <span className='text-[#a6e3a1]'>VERIFIED</span>
+                  <span className='text-green-500'>VERIFIED</span>
                 ) : (
-                  <span className='text-[#f38ba8]'>UNVERIFIED</span>
+                  <span className='text-red-400'>UNVERIFIED</span>
                 )}
               </div>
             </div>
 
             {error && (
-              <div className='mt-4 border border-[#f38ba8]/30 bg-[#f38ba8]/5 p-4 rounded'>
-                <div className='flex items-center gap-2 text-[#f38ba8]'>
+              <div className='mt-4 border border-red-400/30 bg-red-400/5 p-4 rounded'>
+                <div className='flex items-center gap-2 text-red-400'>
                   <AlertCircleIcon className='h-4 w-4' />
                   <span className='font-bold'>{error.title}</span>
                 </div>
-                <p className='mt-2 text-[#f38ba8]/80'>{error.message}</p>
+                <p className='mt-2 text-red-400/80'>{error.message}</p>
               </div>
             )}
           </div>
@@ -241,14 +300,16 @@ function App() {
             {/* Header */}
             <div className='space-y-2'>
               <div className='flex items-center gap-2'>
-                <span className='text-[#89b4fa]'>~</span>
-                <span className='text-[#bac2de]'>header.json</span>
-                <span className='text-[#6c7086] text-sm'>[readonly]</span>
+                <span className='text-primary'>~</span>
+                <span className='text-accent'>header.json</span>
+                <span className='text-muted-foreground text-sm'>
+                  [readonly]
+                </span>
               </div>
-              <div className='border border-[#313244] bg-[#181825] rounded-lg p-4'>
+              <div className='border border-border bg-card rounded-lg p-4'>
                 <Textarea
                   value={JSON.stringify(editableHeader, null, 2)}
-                  className='min-h-[100px] bg-transparent border-0 text-[#cdd6f4] focus:ring-0 resize-none'
+                  className='min-h-[100px] bg-transparent border-0 text-foreground focus:ring-0 resize-none'
                   placeholder='JWT header data'
                   disabled
                 />
@@ -259,8 +320,8 @@ function App() {
             <div className='space-y-2'>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
-                  <span className='text-[#cba6f7]'>{'>'}</span>
-                  <span>payload.json</span>
+                  <span className='text-primary'>{'>'}</span>
+                  <span className='text-accent'>payload.json</span>
                 </div>
                 <Button
                   onClick={() => copyToClipboard(editablePayload, 'payload')}
@@ -268,8 +329,8 @@ function App() {
                   size='sm'
                   className={`transition-colors duration-200 ${
                     copiedPayload
-                      ? 'text-[#a6e3a1] hover:text-[#a6e3a1] hover:bg-[#a6e3a1]/20'
-                      : 'text-[#cdd6f4] hover:text-[#89b4fa] hover:bg-[#313244]'
+                      ? 'text-green-500 hover:text-green-500 hover:bg-green-500/20'
+                      : 'text-foreground hover:text-primary hover:bg-border'
                   }`}
                 >
                   <Copy className='h-4 w-4 mr-1' />
@@ -279,7 +340,7 @@ function App() {
               <Textarea
                 value={editablePayload}
                 onChange={handlePayloadChange}
-                className='min-h-[120px] bg-[#181825] border-[#313244] text-[#cdd6f4] placeholder-[#6c7086] focus:border-[#89b4fa] focus:ring-0 focus:ring-offset-0'
+                className='min-h-[120px] bg-card border-border text-foreground placeholder-muted-foreground focus:border-primary focus:ring-0 focus:ring-offset-0'
                 placeholder='Enter JWT payload data'
               />
             </div>
@@ -287,17 +348,17 @@ function App() {
             {/* Signature Verification */}
             <div className='space-y-2'>
               <div className='flex items-center gap-2'>
-                <span className='text-[#89b4fa]'>~</span>
-                <span className='text-[#bac2de]'>verify_signature</span>
-                <span className='text-[#89b4fa]'>--alg</span>
-                <span className='text-[#a6e3a1]'>HS256</span>
+                <span className='text-primary'>~</span>
+                <span className='text-accent'>verify_signature</span>
+                <span className='text-primary'>--alg</span>
+                <span className='text-green-500'>HS256</span>
               </div>
-              <div className='border border-[#313244] bg-[#181825] rounded-lg p-4 space-y-4'>
+              <div className='border border-border bg-card rounded-lg p-4 space-y-4'>
                 <Input
                   value={secret}
                   onChange={handleSignatureChange}
                   placeholder='Enter your secret key...'
-                  className='bg-transparent border-[#313244] text-[#cdd6f4] focus:border-[#89b4fa] focus:ring-0'
+                  className='bg-transparent border-border text-foreground focus:border-primary focus:ring-0'
                   disabled={
                     !editableHeader ||
                     editableHeader.alg.toUpperCase() !== 'HS256'
@@ -305,12 +366,12 @@ function App() {
                 />
                 {secret && (
                   <div className='flex items-center gap-2'>
-                    <span className='text-[#89b4fa]'>⚡</span>
-                    <span className='text-[#6c7086]'>SIGNATURE:</span>
+                    <span className='text-primary'>⚡</span>
+                    <span className='text-muted-foreground'>SIGNATURE:</span>
                     {isSignatureValid ? (
-                      <span className='text-[#a6e3a1]'>VERIFIED ✓</span>
+                      <span className='text-green-500'>VERIFIED ✓</span>
                     ) : (
-                      <span className='text-[#f38ba8]'>INVALID ✗</span>
+                      <span className='text-red-400'>INVALID ✗</span>
                     )}
                   </div>
                 )}
@@ -320,7 +381,7 @@ function App() {
         </div>
       </div>
       {/* Footer */}
-      <footer className='border-t border-[#313244] pt-6 text-center text-xs text-[#6c7086]'>
+      <footer className='border-t border-border pt-6 text-center text-xs text-muted-foreground'>
         <span className='flex items-center justify-center gap-2'>
           &copy; {new Date().getFullYear()} Zulfaza.
           <a
