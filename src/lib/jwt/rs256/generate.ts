@@ -1,6 +1,7 @@
 import type { JwtHeader } from '../common/types';
+import { pemToArrayBuffer } from './pem';
 
-// Helper: Base64Url encode
+// Base64Url encode
 function base64UrlEncode(data: Uint8Array): string {
   const str = String.fromCharCode(...data);
   const base64 = btoa(str);
@@ -12,24 +13,24 @@ function encodeUTF8(str: string): Uint8Array {
   return new TextEncoder().encode(str);
 }
 
-// Import secret key for HMAC
-async function importHmacKey(secret: string): Promise<CryptoKey> {
+// Import private key for RSA signing
+async function importRsaPrivateKey(pem: string): Promise<CryptoKey> {
+  const keyData = pemToArrayBuffer(pem);
   return crypto.subtle.importKey(
-    'raw',
-    encodeUTF8(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
+    'pkcs8',
+    keyData,
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
     false,
     ['sign']
   );
 }
 
-// Main function to generate JWT
-export async function generateJwtHS256(
+// Generate JWT with RS256
+export async function generateJwtRS256(
   payload: object,
-  secret: string,
-  header: JwtHeader = { alg: 'HS256', typ: 'JWT' }
+  privateKeyPem: string,
+  header: JwtHeader = { alg: 'RS256', typ: 'JWT' }
 ): Promise<string> {
-
   const headerStr = JSON.stringify(header);
   const payloadStr = JSON.stringify(payload);
 
@@ -37,9 +38,9 @@ export async function generateJwtHS256(
   const payloadEncoded = base64UrlEncode(encodeUTF8(payloadStr));
   const signingInput = `${headerEncoded}.${payloadEncoded}`;
 
-  const key = await importHmacKey(secret);
+  const key = await importRsaPrivateKey(privateKeyPem);
   const signatureBuffer = await crypto.subtle.sign(
-    'HMAC',
+    'RSASSA-PKCS1-v1_5',
     key,
     encodeUTF8(signingInput)
   );
