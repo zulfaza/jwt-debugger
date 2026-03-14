@@ -2,11 +2,49 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JWT Debugger</title>
+    <meta
+      name="description"
+      content="JWT Debugger is a browser-based tool to decode JSON Web Tokens, inspect headers and claims, edit payloads, and verify HS256 or RS256 signatures."
+    />
+    <meta
+      name="robots"
+      content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1"
+    />
+    <meta name="author" content="Zulfaza" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="color-scheme" content="light dark" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="JWT Debugger" />
+    <meta property="og:title" content="JWT Debugger" />
+    <meta
+      property="og:description"
+      content="Decode JSON Web Tokens, inspect claims, edit payloads, and verify HS256 or RS256 signatures in the browser."
+    />
+    <meta property="og:image" content="/android-chrome-512x512.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="JWT Debugger" />
+    <meta
+      name="twitter:description"
+      content="Decode JSON Web Tokens, inspect claims, edit payloads, and verify HS256 or RS256 signatures in the browser."
+    />
+    <meta name="twitter:image" content="/android-chrome-512x512.png" />
+    <title>JWT Debugger | Decode, Edit, Verify JWTs</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "JWT Debugger",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "description": "Browser-based JWT tool for decoding tokens, inspecting claims, editing payloads, and verifying HS256 or RS256 signatures."
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

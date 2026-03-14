@@ -16,6 +16,29 @@ const panelClassName =
   'rounded-lg border border-border/80 bg-card px-5 py-5 sm:px-6';
 const metadataClassName =
   'inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 text-xs font-medium';
+const heroPreviewRows = [
+  {
+    label: 'header',
+    widthClassName: 'w-[72%]',
+    barClassName:
+      'from-[oklch(0.76_0.11_294)] to-[oklch(0.73_0.12_276)] dark:from-[oklch(0.74_0.11_293)] dark:to-[oklch(0.78_0.11_280)]',
+    dotClassName: 'bg-[oklch(0.84_0.08_342)]',
+  },
+  {
+    label: 'payload',
+    widthClassName: 'w-[58%]',
+    barClassName:
+      'from-[oklch(0.79_0.1_265)] to-[oklch(0.74_0.14_243)] dark:from-[oklch(0.76_0.11_250)] dark:to-[oklch(0.71_0.15_240)]',
+    dotClassName: 'bg-[oklch(0.9_0.03_342)]',
+  },
+  {
+    label: 'signature',
+    widthClassName: 'w-[46%]',
+    barClassName:
+      'from-[oklch(0.82_0.08_178)] to-[oklch(0.78_0.11_196)] dark:from-[oklch(0.81_0.11_173)] dark:to-[oklch(0.75_0.12_200)]',
+    dotClassName: 'bg-[oklch(0.81_0.08_298)]',
+  },
+] as const;
 
 function base64UrlDecode(str: string): string {
   try {
@@ -375,23 +398,116 @@ function App() {
   };
 
   const headerPreview = JSON.stringify(editableHeader, null, 2);
+  const heroKid = kid || 'demo-key-01';
 
   return (
     <div className='min-h-screen text-foreground'>
       <div className='mx-auto flex min-h-screen max-w-7xl flex-col px-4 pb-8 pt-5 sm:px-6 lg:px-8'>
-        <section>
-          <div className='space-y-3'>
-            <h1 className='max-w-3xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl'>
-              JWT Debugger
-            </h1>
-            <p className='max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base'>
-              Paste a token, review its header, adjust claims, and switch between
-              shared-secret and RSA verification flows with immediate feedback.
-            </p>
+        <section className='grid gap-10 pt-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,1.1fr)] lg:items-center lg:gap-14 lg:pt-8'>
+          <div className='space-y-8'>
+            <div className='flex items-center gap-3 text-[0.95rem] tracking-[0.46em] text-muted-foreground uppercase'>
+              <span className='h-3 w-3 rounded-full bg-accent' />
+              <span>JWT Debugger</span>
+            </div>
+
+            <div className='space-y-5'>
+              <h1 className='max-w-3xl text-6xl font-semibold leading-[0.9] tracking-[-0.06em] text-balance text-foreground sm:text-7xl lg:text-[6.6rem]'>
+                <span className='block'>Decode.</span>
+                <span className='block'>Edit.</span>
+                <span className='block'>Verify.</span>
+              </h1>
+              <p className='max-w-xl text-lg leading-8 text-muted-foreground sm:text-2xl sm:leading-10'>
+                A focused workbench for reading JWT structure, changing claims,
+                and checking signatures without leaving the browser.
+              </p>
+            </div>
+
+            <div className='flex flex-wrap gap-3'>
+              <span className='rounded-2xl border border-border/80 bg-card/88 px-4 py-2 font-mono text-lg text-muted-foreground shadow-[0_12px_30px_rgba(148,163,184,0.10)] backdrop-blur'>
+                HS256
+              </span>
+              <span className='rounded-2xl border border-border/80 bg-card/88 px-4 py-2 font-mono text-lg text-muted-foreground shadow-[0_12px_30px_rgba(148,163,184,0.10)] backdrop-blur'>
+                RS256
+              </span>
+              <span className='rounded-2xl border border-border/80 bg-card/88 px-4 py-2 font-mono text-lg text-muted-foreground shadow-[0_12px_30px_rgba(148,163,184,0.10)] backdrop-blur'>
+                live feedback
+              </span>
+            </div>
+          </div>
+
+          <div className='relative mx-auto w-full max-w-[44rem]'>
+            <div className='absolute inset-x-8 top-4 h-20 rounded-full bg-[oklch(0.74_0.11_293_/_0.16)] blur-3xl dark:bg-[oklch(0.74_0.11_293_/_0.12)]' />
+            <div className='relative overflow-hidden rounded-[2.3rem] border border-white/12 bg-[linear-gradient(180deg,oklch(0.33_0.04_279),oklch(0.25_0.03_275))] px-6 py-6 text-white shadow-[0_42px_90px_rgba(27,32,68,0.26)] sm:px-8 sm:py-8'>
+              <div className='flex items-center justify-between gap-4 pb-6'>
+                <div className='flex items-center gap-3'>
+                  <span className='h-3.5 w-3.5 rounded-full bg-[oklch(0.78_0.14_5)]' />
+                  <span className='h-3.5 w-3.5 rounded-full bg-[oklch(0.88_0.13_90)]' />
+                  <span className='h-3.5 w-3.5 rounded-full bg-[oklch(0.82_0.13_145)]' />
+                </div>
+                <span className='font-mono text-sm tracking-[0.3em] text-white/55 uppercase sm:text-base'>
+                  JWT-workbench
+                </span>
+              </div>
+
+              <div className='rounded-[2rem] border border-white/8 bg-white/4 px-5 py-6 shadow-inner shadow-black/8 backdrop-blur-sm sm:px-7 sm:py-7'>
+                <div className='space-y-6'>
+                  {heroPreviewRows.map((row) => (
+                    <div
+                      key={row.label}
+                      className='flex items-center gap-4 sm:gap-6'
+                    >
+                      <div
+                        className={cn(
+                          'h-8 rounded-full bg-linear-to-r shadow-[inset_0_1px_0_rgba(255,255,255,0.22)] sm:h-9',
+                          row.widthClassName,
+                          row.barClassName
+                        )}
+                      />
+                      <div className='flex items-center gap-3 font-mono text-lg text-white/80'>
+                        <span
+                          className={cn('h-3.5 w-3.5 rounded-full', row.dotClassName)}
+                        />
+                        <span>{row.label}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className='mt-10 h-2 w-24 rounded-full bg-white/20' />
+              </div>
+
+              <div className='mt-4 rounded-[1.7rem] border border-white/8 bg-black/12 px-5 py-5 shadow-inner shadow-black/10 sm:px-6'>
+                <div className='flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
+                  <div className='space-y-2'>
+                    <span className='font-mono text-sm tracking-[0.26em] text-white/42 uppercase'>
+                      Verify
+                    </span>
+                    <div className='flex items-center gap-3'>
+                      <span
+                        className={cn(
+                          'h-3.5 w-3.5 rounded-full',
+                          isSignatureValid
+                            ? 'bg-[oklch(0.82_0.13_145)]'
+                            : 'bg-[oklch(0.72_0.19_25)]'
+                        )}
+                      />
+                      <span className='text-2xl font-semibold tracking-tight text-white'>
+                        {isSignatureValid ? 'Signature valid' : 'Signature invalid'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className='space-y-2 font-mono text-sm text-white/68 sm:text-right'>
+                    <div>alg: {algorithm}</div>
+                    <div>kid: {heroKid}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        <main className='mt-8 grid flex-1 gap-6 xl:grid-cols-[minmax(0,1.18fr)_minmax(340px,0.82fr)]'>
+        <main className='mt-10 grid flex-1 gap-6 xl:grid-cols-[minmax(0,1.18fr)_minmax(340px,0.82fr)]'>
           <div className='space-y-6'>
             <section className={panelClassName}>
               <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
