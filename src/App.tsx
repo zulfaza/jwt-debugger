@@ -13,32 +13,9 @@ import { generateJwt, verifyJwt } from './lib/jwt';
 import type { Algorithm, JwtHeader } from './lib/jwt';
 
 const panelClassName =
-  'rounded-lg border border-border/80 bg-card px-5 py-5 sm:px-6';
+  'border border-border/60 bg-card/80 px-5 py-5 backdrop-blur-sm sm:px-6';
 const metadataClassName =
-  'inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 text-xs font-medium';
-const heroPreviewRows = [
-  {
-    label: 'header',
-    widthClassName: 'w-[72%]',
-    barClassName:
-      'from-[oklch(0.76_0.11_294)] to-[oklch(0.73_0.12_276)] dark:from-[oklch(0.74_0.11_293)] dark:to-[oklch(0.78_0.11_280)]',
-    dotClassName: 'bg-[oklch(0.84_0.08_342)]',
-  },
-  {
-    label: 'payload',
-    widthClassName: 'w-[58%]',
-    barClassName:
-      'from-[oklch(0.79_0.1_265)] to-[oklch(0.74_0.14_243)] dark:from-[oklch(0.76_0.11_250)] dark:to-[oklch(0.71_0.15_240)]',
-    dotClassName: 'bg-[oklch(0.9_0.03_342)]',
-  },
-  {
-    label: 'signature',
-    widthClassName: 'w-[46%]',
-    barClassName:
-      'from-[oklch(0.82_0.08_178)] to-[oklch(0.78_0.11_196)] dark:from-[oklch(0.81_0.11_173)] dark:to-[oklch(0.75_0.12_200)]',
-    dotClassName: 'bg-[oklch(0.81_0.08_298)]',
-  },
-] as const;
+  'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium tracking-wide';
 
 function base64UrlDecode(str: string): string {
   try {
@@ -398,126 +375,57 @@ function App() {
   };
 
   const headerPreview = JSON.stringify(editableHeader, null, 2);
-  const heroKid = kid || 'demo-key-01';
 
   return (
     <div className='min-h-screen text-foreground'>
-      <div className='mx-auto flex min-h-screen max-w-7xl flex-col px-4 pb-8 pt-5 sm:px-6 lg:px-8'>
-        <section className='grid gap-10 pt-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,1.1fr)] lg:items-center lg:gap-14 lg:pt-8'>
-          <div className='space-y-8'>
-            <div className='flex items-center gap-3 text-[0.95rem] tracking-[0.46em] text-muted-foreground uppercase'>
-              <span className='h-3 w-3 rounded-full bg-accent' />
-              <span>JWT Debugger</span>
-            </div>
-
-            <div className='space-y-5'>
-              <h1 className='max-w-3xl text-6xl font-semibold leading-[0.9] tracking-[-0.06em] text-balance text-foreground sm:text-7xl lg:text-[6.6rem]'>
-                <span className='block'>Decode.</span>
-                <span className='block'>Edit.</span>
-                <span className='block'>Verify.</span>
-              </h1>
-              <p className='max-w-xl text-lg leading-8 text-muted-foreground sm:text-2xl sm:leading-10'>
-                A focused workbench for reading JWT structure, changing claims,
-                and checking signatures without leaving the browser.
-              </p>
-            </div>
-
-            <div className='flex flex-wrap gap-3'>
-              <span className='rounded-2xl border border-border/80 bg-card/88 px-4 py-2 font-mono text-lg text-muted-foreground shadow-[0_12px_30px_rgba(148,163,184,0.10)] backdrop-blur'>
-                HS256
-              </span>
-              <span className='rounded-2xl border border-border/80 bg-card/88 px-4 py-2 font-mono text-lg text-muted-foreground shadow-[0_12px_30px_rgba(148,163,184,0.10)] backdrop-blur'>
-                RS256
-              </span>
-              <span className='rounded-2xl border border-border/80 bg-card/88 px-4 py-2 font-mono text-lg text-muted-foreground shadow-[0_12px_30px_rgba(148,163,184,0.10)] backdrop-blur'>
-                live feedback
+      <div className='mx-auto flex min-h-screen max-w-7xl flex-col px-4 pb-8 sm:px-6 lg:px-8'>
+        {/* Navigation */}
+        <header className='sticky top-2 z-10 border border-border bg-background/80 backdrop-blur-xl'>
+          <nav className='flex h-14 items-center justify-between px-4 sm:px-6'>
+            <div className='flex items-center gap-2.5'>
+              <span className='h-2.5 w-2.5 rounded-full bg-accent' />
+              <span className='font-display text-[0.95rem] font-semibold tracking-tight'>
+                jwt debugger
               </span>
             </div>
-          </div>
-
-          <div className='relative mx-auto w-full max-w-[44rem]'>
-            <div className='absolute inset-x-8 top-4 h-20 rounded-full bg-[oklch(0.74_0.11_293_/_0.16)] blur-3xl dark:bg-[oklch(0.74_0.11_293_/_0.12)]' />
-            <div className='relative overflow-hidden rounded-[2.3rem] border border-white/12 bg-[linear-gradient(180deg,oklch(0.33_0.04_279),oklch(0.25_0.03_275))] px-6 py-6 text-white shadow-[0_42px_90px_rgba(27,32,68,0.26)] sm:px-8 sm:py-8'>
-              <div className='flex items-center justify-between gap-4 pb-6'>
-                <div className='flex items-center gap-3'>
-                  <span className='h-3.5 w-3.5 rounded-full bg-[oklch(0.78_0.14_5)]' />
-                  <span className='h-3.5 w-3.5 rounded-full bg-[oklch(0.88_0.13_90)]' />
-                  <span className='h-3.5 w-3.5 rounded-full bg-[oklch(0.82_0.13_145)]' />
-                </div>
-                <span className='font-mono text-sm tracking-[0.3em] text-white/55 uppercase sm:text-base'>
-                  JWT-workbench
-                </span>
-              </div>
-
-              <div className='rounded-[2rem] border border-white/8 bg-white/4 px-5 py-6 shadow-inner shadow-black/8 backdrop-blur-sm sm:px-7 sm:py-7'>
-                <div className='space-y-6'>
-                  {heroPreviewRows.map((row) => (
-                    <div
-                      key={row.label}
-                      className='flex items-center gap-4 sm:gap-6'
-                    >
-                      <div
-                        className={cn(
-                          'h-8 rounded-full bg-linear-to-r shadow-[inset_0_1px_0_rgba(255,255,255,0.22)] sm:h-9',
-                          row.widthClassName,
-                          row.barClassName
-                        )}
-                      />
-                      <div className='flex items-center gap-3 font-mono text-lg text-white/80'>
-                        <span
-                          className={cn('h-3.5 w-3.5 rounded-full', row.dotClassName)}
-                        />
-                        <span>{row.label}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className='mt-10 h-2 w-24 rounded-full bg-white/20' />
-              </div>
-
-              <div className='mt-4 rounded-[1.7rem] border border-white/8 bg-black/12 px-5 py-5 shadow-inner shadow-black/10 sm:px-6'>
-                <div className='flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
-                  <div className='space-y-2'>
-                    <span className='font-mono text-sm tracking-[0.26em] text-white/42 uppercase'>
-                      Verify
-                    </span>
-                    <div className='flex items-center gap-3'>
-                      <span
-                        className={cn(
-                          'h-3.5 w-3.5 rounded-full',
-                          isSignatureValid
-                            ? 'bg-[oklch(0.82_0.13_145)]'
-                            : 'bg-[oklch(0.72_0.19_25)]'
-                        )}
-                      />
-                      <span className='text-2xl font-semibold tracking-tight text-white'>
-                        {isSignatureValid ? 'Signature valid' : 'Signature invalid'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className='space-y-2 font-mono text-sm text-white/68 sm:text-right'>
-                    <div>alg: {algorithm}</div>
-                    <div>kid: {heroKid}</div>
-                  </div>
-                </div>
-              </div>
+            <div className='flex items-center gap-1'>
+              <Button asChild variant='ghost' size='sm'>
+                <a
+                  href='https://github.com/zulfaza/jwt-debugger'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <Github className='h-4 w-4' />
+                  <span className='hidden sm:inline'>Source</span>
+                </a>
+              </Button>
+              <Button
+                type='button'
+                onClick={() => setIsDarkMode((current) => !current)}
+                variant='ghost'
+                size='icon'
+                aria-label='Toggle color mode'
+              >
+                {isDarkMode ? (
+                  <MoonStar className='h-4 w-4' />
+                ) : (
+                  <SunMedium className='h-4 w-4' />
+                )}
+              </Button>
             </div>
-          </div>
-        </section>
+          </nav>
+        </header>
 
-        <main className='mt-10 grid flex-1 gap-6 xl:grid-cols-[minmax(0,1.18fr)_minmax(340px,0.82fr)]'>
+        {/* Main content */}
+        <main className='mt-6 grid flex-1 gap-6 xl:grid-cols-[minmax(0,1.18fr)_minmax(340px,0.82fr)]'>
           <div className='space-y-6'>
+            {/* Encoded token */}
             <section className={panelClassName}>
               <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-                <div className='space-y-1'>
+                <div>
                   <h2 className='text-lg font-semibold tracking-tight'>
                     Encoded token
                   </h2>
-                  <p className='text-sm text-muted-foreground'>
-                    Paste a JWT to decode its structure and evaluate the signature.
-                  </p>
                 </div>
                 <Button
                   type='button'
@@ -531,22 +439,33 @@ function App() {
                   }
                 >
                   <Copy className='h-4 w-4' />
-                  {copiedJWT ? 'Copied' : 'Copy token'}
+                  {copiedJWT ? 'Copied' : 'Copy'}
                 </Button>
               </div>
 
               <div className='mt-4 space-y-4'>
                 <div className='flex flex-wrap gap-2'>
-                  <span className={cn(metadataClassName, getStatusClass(isValidJwt))}>
-                    {isValidJwt ? 'Readable header + payload' : 'Needs valid JWT shape'}
+                  <span
+                    className={cn(
+                      metadataClassName,
+                      getStatusClass(isValidJwt)
+                    )}
+                  >
+                    {isValidJwt
+                      ? 'Readable header + payload'
+                      : 'Needs valid JWT shape'}
                   </span>
                   <span
                     className={cn(
                       metadataClassName,
-                      isSignatureValid ? getNeutralClass() : getStatusClass(false)
+                      isSignatureValid
+                        ? getNeutralClass()
+                        : getStatusClass(false)
                     )}
                   >
-                    {isSignatureValid ? 'Signature matches current inputs' : 'Verification failed'}
+                    {isSignatureValid
+                      ? 'Signature matches'
+                      : 'Verification failed'}
                   </span>
                 </div>
 
@@ -569,14 +488,13 @@ function App() {
               </div>
             </section>
 
+            {/* Payload */}
             <section className={panelClassName}>
               <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-                <div className='space-y-1'>
-                  <h2 className='text-lg font-semibold tracking-tight'>Payload</h2>
-                  <p className='text-sm text-muted-foreground'>
-                    Edit claims and regenerate the token from the current signing
-                    settings.
-                  </p>
+                <div>
+                  <h2 className='text-lg font-semibold tracking-tight'>
+                    Payload
+                  </h2>
                 </div>
                 <Button
                   type='button'
@@ -590,7 +508,7 @@ function App() {
                   }
                 >
                   <Copy className='h-4 w-4' />
-                  {copiedPayload ? 'Copied' : 'Copy payload'}
+                  {copiedPayload ? 'Copied' : 'Copy'}
                 </Button>
               </div>
 
@@ -605,14 +523,11 @@ function App() {
           </div>
 
           <div className='space-y-6'>
+            {/* Header */}
             <section className={panelClassName}>
-              <div className='space-y-1'>
-                <h2 className='text-lg font-semibold tracking-tight'>Header</h2>
-                <p className='text-sm text-muted-foreground'>
-                  Parsed token metadata. The editor is read-only and updates from
-                  the current token.
-                </p>
-              </div>
+              <h2 className='text-lg font-semibold tracking-tight'>
+                Header
+              </h2>
 
               <div className='mt-4'>
                 <JsonEditor
@@ -624,16 +539,11 @@ function App() {
               </div>
             </section>
 
+            {/* Signing & verification */}
             <section className={panelClassName}>
-              <div className='space-y-1'>
-                <h2 className='text-lg font-semibold tracking-tight'>
-                  Signing and verification
-                </h2>
-                <p className='text-sm text-muted-foreground'>
-                  Choose the algorithm, set an optional key ID, and provide the
-                  material needed for signing or verification.
-                </p>
-              </div>
+              <h2 className='text-lg font-semibold tracking-tight'>
+                Signing & verification
+              </h2>
 
               <div className='mt-4 space-y-4'>
                 <div className='grid gap-4 sm:grid-cols-[minmax(0,140px)_minmax(0,1fr)]'>
@@ -643,7 +553,9 @@ function App() {
                       id='jwt-algorithm'
                       value={algorithm}
                       onChange={(event) => {
-                        const nextAlgorithm = parseAlgorithm(event.target.value);
+                        const nextAlgorithm = parseAlgorithm(
+                          event.target.value
+                        );
                         if (nextAlgorithm) {
                           handleAlgorithmChange(nextAlgorithm);
                         }
@@ -686,7 +598,9 @@ function App() {
                         id='jwt-private-key'
                         value={privateKey}
                         onChange={handlePrivateKeyChange}
-                        placeholder={'-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----'}
+                        placeholder={
+                          '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----'
+                        }
                         className='min-h-[132px] font-mono text-[13px] leading-6'
                       />
                     </label>
@@ -697,21 +611,26 @@ function App() {
                         id='jwt-public-key'
                         value={publicKey}
                         onChange={handlePublicKeyChange}
-                        placeholder={'-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----'}
+                        placeholder={
+                          '-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----'
+                        }
                         className='min-h-[132px] font-mono text-[13px] leading-6'
                       />
                     </label>
                   </div>
                 ) : null}
 
-                <div className='flex flex-wrap gap-2 border-t border-border/70 pt-4'>
+                <div className='flex flex-wrap gap-2 border-t border-border/50 pt-4'>
                   <span className={cn(metadataClassName, getNeutralClass())}>
-                    Mode {algorithm}
+                    {algorithm}
                   </span>
                   <span
-                    className={cn(metadataClassName, getStatusClass(isSignatureValid))}
+                    className={cn(
+                      metadataClassName,
+                      getStatusClass(isSignatureValid)
+                    )}
                   >
-                    {isSignatureValid ? 'Ready to verify' : 'Verification needs attention'}
+                    {isSignatureValid ? 'Ready' : 'Needs attention'}
                   </span>
                 </div>
               </div>
@@ -719,38 +638,13 @@ function App() {
           </div>
         </main>
 
-        <footer className='mt-8 flex flex-col gap-3 border-t border-border/80 pt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between'>
-          <div className='flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3'>
+        {/* Footer */}
+        <footer className='mt-8 border-t border-border/40 pt-4'>
+          <div className='flex flex-col gap-1 px-4 text-xs text-muted-foreground/50 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8'>
             <span>&copy; {new Date().getFullYear()} Zulfaza</span>
-            <span className='hidden text-border sm:inline'>/</span>
-            <span>Built for quick token inspection and signature checks.</span>
-          </div>
-
-          <div className='flex items-center gap-2'>
-            <Button asChild variant='ghost' size='sm'>
-              <a
-                href='https://github.com/zulfaza/jwt-debugger'
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                <Github className='h-4 w-4' />
-                Source
-              </a>
-            </Button>
-            <Button
-              type='button'
-              onClick={() => setIsDarkMode((current) => !current)}
-              variant='outline'
-              size='sm'
-              aria-label='Toggle color mode'
-            >
-              {isDarkMode ? (
-                <MoonStar className='h-4 w-4' />
-              ) : (
-                <SunMedium className='h-4 w-4' />
-              )}
-              {isDarkMode ? 'Dark' : 'Light'}
-            </Button>
+            <span>
+              Built for quick token inspection and signature checks.
+            </span>
           </div>
         </footer>
       </div>

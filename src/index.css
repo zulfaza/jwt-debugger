@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
@@ -7,6 +7,7 @@
 @theme {
   --font-sans: 'Instrument Sans', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
+  --font-display: 'Bricolage Grotesque', serif;
 }
 
 :root {
@@ -193,5 +194,16 @@
   ::selection {
     background-color: color-mix(in oklch, var(--primary) 32%, transparent);
     color: var(--foreground);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

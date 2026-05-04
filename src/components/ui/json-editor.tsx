@@ -46,7 +46,7 @@ export function JsonEditor({
         placeholder={placeholder}
         readOnly={readOnly}
         className={cn(
-          'w-full rounded-lg border border-border/70 bg-[var(--editor-surface)] font-mono text-[13px] text-[var(--editor-text)]',
+          'w-full rounded-none border border-border/70 bg-[var(--editor-surface)] font-mono text-[13px] text-[var(--editor-text)]',
           editorClassName ?? 'min-h-[280px]'
         )}
         textareaClassName={cn('outline-none', readOnly ? 'caret-transparent' : 'caret-primary')}

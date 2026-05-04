@@ -60,7 +60,7 @@ export function TokenEditor({
         highlight={highlightJwt}
         padding={16}
         placeholder={placeholder}
-        className='min-h-[188px] w-full rounded-lg border border-border/70 bg-[var(--editor-surface)] font-mono text-[13px] text-[var(--editor-text)]'
+        className='min-h-[188px] w-full rounded-none border border-border/70 bg-[var(--editor-surface)] font-mono text-[13px] text-[var(--editor-text)]'
         textareaClassName='outline-none caret-primary'
         style={{
           fontFamily: 'var(--font-mono)',
